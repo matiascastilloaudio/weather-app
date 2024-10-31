@@ -27,18 +27,21 @@ const hi = document.createElement('p');
 
 const description = document.createElement('p');
 
-const searchBtn = document.createElement('button');
-searchBtn.textContent = 'Search';
+const buttonDiv = document.createElement('div');
+buttonDiv.classList.add('buttonDiv');
 
+const searchBtn = document.createElement('img');
+searchBtn.src = './assets/search.svg';
 
-const unitBtn = document.createElement('button');
-unitBtn.textContent = 'ºF / ºC';
+const unitBtn = document.createElement('img');
+
+buttonDiv.append(searchBtn, unitBtn);
 
 topDiv.append(leftDiv, rightDiv);
 leftDiv.append(city, temp);
 rightDiv.append(state, range);
 range.append(lo, hi);
-bottomDiv.append(description, searchBtn, unitBtn);
+bottomDiv.append(description, buttonDiv);
 container.append(topDiv, bottomDiv);
 
 // functions
@@ -72,26 +75,30 @@ async function getInfo(userLocation) {
         const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${userLocation}?key=${API_KEY}`);
         const weatherData = await response.json();
         console.log(weatherData);
+
         city.textContent = weatherData.resolvedAddress;
         temp.textContent = `${weatherData.currentConditions.temp} ºF`;
         state.textContent = weatherData.currentConditions.conditions;
         lo.textContent = `Min: ${weatherData.days[0].tempmin} ºF`;
         hi.textContent = `Max: ${weatherData.days[0].tempmax} ºF`;
         let isCelsius = false;
+        unitBtn.src = './assets/celsius.svg';
         description.textContent = weatherData.description;
+
         unitBtn.addEventListener('click', () => {
             if (!isCelsius) {
                 temp.textContent = `${convertUnit(weatherData.currentConditions.temp)} ºC`;
                 lo.textContent = `Min: ${convertUnit(weatherData.days[0].tempmin)} ºC`;
                 hi.textContent = `Max: ${convertUnit(weatherData.days[0].tempmax)} ºC`;
                 isCelsius = true;
+                unitBtn.src = './assets/fahrenheit.svg';
             } else {
                 temp.textContent = `${weatherData.currentConditions.temp} ºF`;
                 lo.textContent = `Min: ${weatherData.days[0].tempmin} ºF`;
                 hi.textContent = `Max: ${weatherData.days[0].tempmax} ºF`;
                 isCelsius = false;
+                unitBtn.src = './assets/celsius.svg';
             }
-
         });
 
         const currentTimeEpoch = weatherData.currentConditions.datetimeEpoch;
